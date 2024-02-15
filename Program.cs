@@ -6,8 +6,7 @@
         Console.WriteLine("1. Create data file");
         Console.WriteLine("2. Parse data file");
 
-        int choice;
-        if (!int.TryParse(Console.ReadLine(), out choice))
+        if (!int.TryParse(Console.ReadLine(), out int choice))
         {
             Console.WriteLine("Invalid choice.");
             return;
@@ -30,16 +29,25 @@
     static void CreateDataFile()
     {
         Console.Write("Enter number of weeks: ");
-        int weeks = int.Parse(Console.ReadLine());
+        if (!int.TryParse(Console.ReadLine(), out int weeks) || weeks <= 0)
+        {
+            Console.WriteLine("Invalid input.");
+            return;
+        }
 
         using (StreamWriter writer = new StreamWriter("data.txt"))
         {
             for (int i = 0; i < weeks; i++)
             {
-                writer.WriteLine($"Week of {DateTime.Today.AddDays(7 * i):MMM, dd, yyyy}");
+                DateTime startDate = DateTime.Today.AddDays(7 * i);
+                writer.WriteLine($"Week of {startDate.ToString("MMM, dd, yyyy")}");
+                writer.WriteLine(" Su Mo Tu We Th Fr Sa");
+                writer.WriteLine(" -- -- -- -- -- -- --");
+
                 for (int j = 0; j < 7; j++)
                 {
-                    writer.Write($"{(j + 1) * 2},"); // Generating random data, replace this with actual data source
+                    DateTime currentDate = startDate.AddDays(j);
+                    writer.Write($"{currentDate.Day,2} ");
                 }
                 writer.WriteLine();
             }
@@ -62,17 +70,8 @@
             while ((line = reader.ReadLine()) != null)
             {
                 Console.WriteLine(line);
-                string[] parts = line.Split(',');
-                Console.WriteLine(" Su Mo Tu We Th Fr Sa");
-                Console.WriteLine(" -- -- -- -- -- -- --");
-
-                for (int i = 1; i < parts.Length; i++)
-                {
-                    Console.Write($"{parts[i],2} ");
-                    if (i % 7 == 0)
-                        Console.WriteLine();
-                }
-                Console.WriteLine();
+                for (int i = 0; i < 3; i++)
+                    Console.WriteLine(reader.ReadLine());
             }
         }
     }
